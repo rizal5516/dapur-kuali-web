@@ -1,164 +1,175 @@
 <template>
-  <div
-    v-if="errorMessage || successMessage"
-    class="fixed top-6 right-5 z-[120] flex flex-col gap-3 min-w-[320px] max-w-sm"
-  >
-    <div
-      v-if="errorMessage"
-      class="alert flex items-center gap-2 rounded-xl p-4 shadow-lg bg-(--color)/20 border border-(--color)/60 text-(--color) [--color:var(--color-danger)]"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="size-5 stroke-[1.5]"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-      >
-        <circle cx="12" cy="12" r="10" />
-        <path d="M12 8v4" />
-        <path d="M12 16h.01" />
-      </svg>
+  <AppAlert :message="errorMessage" type="error" @close="clearError" />
 
-      <span class="flex-1">{{ errorMessage }}</span>
+  <AppAlert :message="successMessage" type="success" @close="clearSuccess" />
 
-      <button
-        class="ml-auto cursor-pointer"
-        type="button"
-        aria-label="Close"
-        @click="errorMessage = ''"
-      >
-        ✕
-      </button>
-    </div>
-
-    <div
-      v-if="successMessage"
-      class="alert flex items-center gap-2 rounded-xl p-4 shadow-lg bg-(--color)/20 border border-(--color)/60 text-(--color) [--color:var(--color-success)]"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="size-5 stroke-[1.5]"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-      >
-        <path d="M20 6 9 17l-5-5" />
-      </svg>
-
-      <span class="flex-1">{{ successMessage }}</span>
-
-      <button
-        class="ml-auto cursor-pointer"
-        type="button"
-        aria-label="Close"
-        @click="successMessage = ''"
-      >
-        ✕
-      </button>
-    </div>
-  </div>
-
-  <div
-    class="box relative p-5 before:absolute before:inset-0 before:mx-3 before:-mb-3 before:border before:border-foreground/10 before:bg-background/30 before:shadow-[0px_3px_5px_#0000000b] before:z-[-1] before:rounded-xl after:absolute after:inset-0 after:border after:border-foreground/10 after:bg-background after:shadow-[0px_3px_5px_#0000000b] after:rounded-xl after:z-[-1] after:backdrop-blur-md mx-auto my-auto w-full px-5 py-8 sm:w-3/4 sm:px-8 lg:w-2/4 xl:ml-24 xl:w-auto xl:p-0 xl:before:hidden xl:after:hidden"
-  >
-    <h2 class="text-center text-2xl font-semibold xl:text-left xl:text-3xl">Reset Password</h2>
-
-    <div class="mt-2 text-center opacity-70 xl:hidden">
-      Masukkan email akun kamu. Jika terdaftar, kami akan mengirim link untuk reset password.
-    </div>
-
-    <form class="mt-8 flex flex-col gap-5" @submit.prevent="onSubmit" novalidate>
-      <input
-        class="h-10 w-full rounded-md border bg-background ring-offset-background file:border-0 file:bg-transparent file:font-medium file:text-foreground placeholder:text-foreground/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/5 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 box block min-w-full px-5 py-6 xl:min-w-[28rem]"
+  <AuthCard title="Reset Password">
+    <form class="mt-8 flex flex-col gap-5" @submit.prevent="handleSubmit" novalidate>
+      <FormInput
+        id="email"
         type="email"
-        v-model.trim="email"
+        v-model="email"
+        placeholder="Email"
         autocomplete="username"
         inputmode="email"
-        placeholder="Email"
-        :aria-invalid="!!emailError"
-        :disabled="submitting"
+        disabled
+        readonly
+      />
+
+      <FormInput
+        id="password"
+        type="password"
+        v-model="password"
+        placeholder="Password Baru"
+        autocomplete="new-password"
+        :error="passwordError"
+        :disabled="isLoading"
+        @blur="passwordValidation.validate"
         required
       />
 
-      <button
-        class="cursor-pointer inline-flex border items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-(--color)/20 border-(--color)/60 text-(--color) hover:bg-(--color)/5 [--color:var(--color-primary)] h-10 login-button box w-full px-4 py-5"
-        type="submit"
-        :disabled="submitting || !formValid"
-      >
-        <span v-if="!submitting">Kirim Link Reset</span>
+      <FormInput
+        id="password-confirmation"
+        type="password"
+        v-model="passwordConfirmation"
+        placeholder="Konfirmasi Password Baru"
+        autocomplete="new-password"
+        :error="confirmationError"
+        :disabled="isLoading"
+        @blur="confirmationValidation.validate"
+        required
+      />
 
-        <span v-else class="flex items-center gap-2">
-          <div class="loader-dots ![--color:--alpha(var(--color-primary)/80%)]"></div>
-          Mengirim...
-        </span>
-      </button>
+      <SubmitButton
+        label="Reset Password"
+        loading-text="Memproses..."
+        :loading="isLoading"
+        :disabled="!isFormValid"
+      />
     </form>
-  </div>
+  </AuthCard>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onBeforeUnmount } from 'vue'
-import { forgotPassword } from '@/services/auth.service'
+import { ref, computed, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useResetPassword } from '@/composables/useResetPassword'
+import { useAlert } from '@/composables/useAlert'
+import {
+  usePasswordValidation,
+  usePasswordConfirmationValidation,
+  isValidToken,
+  isValidEmail,
+  PASSWORD_MIN_LENGTH,
+} from '@/composables/useFormValidation'
+import AppAlert from '@/components/ui/AppAlert.vue'
+import AuthCard from '@/components/ui/AuthCard.vue'
+import FormInput from '@/components/ui/FormInput.vue'
+import SubmitButton from '@/components/ui/SubmitButton.vue'
 
+const route = useRoute()
+const router = useRouter()
+const { resetPassword, isLoading } = useResetPassword()
+const { errorMessage, successMessage, showError, showSuccess, clearError, clearSuccess } =
+  useAlert()
+
+// Form state
 const email = ref('')
+const token = ref('')
+const password = ref('')
+const passwordConfirmation = ref('')
 
-const submitting = ref(false)
-const errorMessage = ref('')
-const successMessage = ref('')
-
-let resetTimer: number | null = null
-
-const emailError = computed(() => {
-  if (!email.value) return ''
-  const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())
-  return ok ? '' : 'Format email tidak valid.'
+// Validations
+const passwordValidation = usePasswordValidation(password, {
+  minLength: PASSWORD_MIN_LENGTH,
+  requireStrength: true,
 })
 
-const formValid = computed(() => !!email.value && !emailError.value)
+const confirmationValidation = usePasswordConfirmationValidation(password, passwordConfirmation)
 
-function clearResetTimer() {
-  if (resetTimer) {
-    window.clearTimeout(resetTimer)
-    resetTimer = null
-  }
-}
+// Computed properties
+const passwordError = computed(() => passwordValidation.error.value)
+const confirmationError = computed(() => confirmationValidation.error.value)
 
-function resetUI() {
-  email.value = ''
-  errorMessage.value = ''
-  successMessage.value = ''
-}
+const isFormValid = computed(() => {
+  return (
+    passwordValidation.isValid.value &&
+    confirmationValidation.isValid.value &&
+    password.value === passwordConfirmation.value
+  )
+})
 
-async function onSubmit() {
-  if (submitting.value) return
+// Methods
+const handleSubmit = async () => {
+  clearError()
+  clearSuccess()
 
-  clearResetTimer()
-  errorMessage.value = ''
-  successMessage.value = ''
+  // Final validation
+  const isPasswordValid = passwordValidation.validate()
+  const isConfirmationValid = confirmationValidation.validate()
 
-  if (!formValid.value) {
-    errorMessage.value = 'Mohon periksa email yang kamu isi.'
+  if (!isPasswordValid || !isConfirmationValid) {
+    showError('Pastikan password memenuhi semua kriteria')
     return
   }
 
-  submitting.value = true
+  if (!isFormValid.value) {
+    showError('Pastikan semua field terisi dengan benar')
+    return
+  }
+
   try {
-    const res = await forgotPassword(email.value.trim())
+    const response = await resetPassword(
+      email.value,
+      password.value,
+      passwordConfirmation.value,
+      token.value,
+    )
 
-    successMessage.value =
-      res?.message || 'Jika email terdaftar, kami sudah mengirim link reset password.'
+    showSuccess(response.message)
 
-    resetTimer = window.setTimeout(() => {
-      resetUI()
-    }, 6000)
+    // Clear sensitive data
+    password.value = ''
+    passwordConfirmation.value = ''
+
+    // Redirect ke login
+    setTimeout(() => {
+      router.push('/login')
+    }, 2000)
   } catch (err) {
-    errorMessage.value = err instanceof Error ? err.message : 'Gagal mengirim permintaan reset.'
-  } finally {
-    submitting.value = false
+    const message = err instanceof Error ? err.message : 'Terjadi kesalahan'
+    showError(message)
+
+    // Clear password on error untuk security
+    password.value = ''
+    passwordConfirmation.value = ''
   }
 }
 
-onBeforeUnmount(() => {
-  clearResetTimer()
+// Initialize & validate query params
+onMounted(() => {
+  const tokenParam = route.query.token
+  const emailParam = route.query.email
+
+  // Validate token exists and is string
+  if (!tokenParam || typeof tokenParam !== 'string' || !isValidToken(tokenParam)) {
+    showError('Link reset password tidak valid')
+    setTimeout(() => {
+      router.push('/forgot-password')
+    }, 2000)
+    return
+  }
+
+  // Validate email exists and is string
+  if (!emailParam || typeof emailParam !== 'string' || !isValidEmail(emailParam)) {
+    showError('Link reset password tidak valid')
+    setTimeout(() => {
+      router.push('/forgot-password')
+    }, 2000)
+    return
+  }
+
+  token.value = tokenParam
+  email.value = emailParam.toLowerCase().trim()
 })
 </script>
