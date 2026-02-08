@@ -1,5 +1,5 @@
 <template>
-  <AppAlert :message="errorMessage" type="error" @close="clearError" />
+  <AppAlert :message="error" type="error" @close="clearError" />
 
   <AppAlert :message="successMessage" type="success" @close="clearSuccess" />
 
@@ -13,7 +13,7 @@
         autocomplete="username"
         inputmode="email"
         :error="emailError"
-        :disabled="isSubmitting"
+        :disabled="isLoading"
         @blur="emailValidation.validate"
         required
       />
@@ -21,7 +21,7 @@
       <SubmitButton
         label="Kirim Link Reset"
         loading-text="Mengirim..."
-        :loading="isSubmitting"
+        :loading="isLoading"
         :disabled="!isFormValid"
       />
     </form>
@@ -30,20 +30,19 @@
 
 <script setup lang="ts">
 import { ref, computed, onBeforeUnmount } from 'vue'
-import { forgotPassword } from '@/services/auth.service'
-import { useAlert } from '@/composables/useAlert'
+import { useForgotPassword } from '@/composables/useForgotPassword'
 import { useEmailValidation } from '@/composables/useFormValidation'
 import AppAlert from '@/components/ui/AppAlert.vue'
 import AuthCard from '@/components/ui/AuthCard.vue'
 import FormInput from '@/components/ui/FormInput.vue'
 import SubmitButton from '@/components/ui/SubmitButton.vue'
 
-const { errorMessage, successMessage, showError, showSuccess, clearError, clearSuccess } =
-  useAlert()
+// Composables
+const { forgotPassword, isLoading, error, success, successMessage, resetState } =
+  useForgotPassword()
 
 // Form state
 const email = ref('')
-const isSubmitting = ref(false)
 
 // Validations
 const emailValidation = useEmailValidation(email)
@@ -52,7 +51,7 @@ const emailValidation = useEmailValidation(email)
 const emailError = computed(() => emailValidation.error.value)
 const isFormValid = computed(() => emailValidation.isValid.value)
 
-// Timer untuk reset UI
+// Timer untuk auto-reset UI setelah sukses
 let resetTimer: number | null = null
 
 // Methods
@@ -63,49 +62,48 @@ const clearResetTimer = () => {
   }
 }
 
+const clearError = () => {
+  error.value = null
+}
+
+const clearSuccess = () => {
+  successMessage.value = null
+}
+
 const resetUI = () => {
   email.value = ''
-  clearError()
-  clearSuccess()
+  resetState()
 }
 
 const handleSubmit = async () => {
-  if (isSubmitting.value) return
+  // Prevent double submission
+  if (isLoading.value) return
 
+  // Clear previous timers dan messages
   clearResetTimer()
-  clearError()
-  clearSuccess()
+  resetState()
 
-  // Validate email
+  // Validate email before submit
   const isEmailValid = emailValidation.validate()
 
-  if (!isEmailValid) {
-    showError('Mohon periksa email yang kamu isi')
+  if (!isEmailValid || !isFormValid.value) {
+    error.value = 'Mohon periksa email yang kamu isi'
     return
   }
-
-  if (!isFormValid.value) {
-    showError('Mohon periksa email yang kamu isi')
-    return
-  }
-
-  isSubmitting.value = true
 
   try {
-    const res = await forgotPassword(email.value.trim())
+    await forgotPassword(email.value)
 
-    const message = res?.message || 'Jika email terdaftar, kami sudah mengirim link reset password.'
-    showSuccess(message)
-
-    // Reset UI setelah 6 detik
-    resetTimer = window.setTimeout(() => {
-      resetUI()
-    }, 6000)
+    // Success! Auto-reset UI after 6 seconds
+    if (success.value) {
+      resetTimer = window.setTimeout(() => {
+        resetUI()
+      }, 6000)
+    }
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Gagal mengirim permintaan reset'
-    showError(message)
-  } finally {
-    isSubmitting.value = false
+    // Error sudah di-handle di composable
+    // Component hanya perlu display error yang sudah ada di error.value
+    console.error('Forgot password failed:', err)
   }
 }
 

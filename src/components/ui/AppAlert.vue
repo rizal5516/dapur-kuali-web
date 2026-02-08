@@ -39,7 +39,7 @@
 import { computed, watch, defineComponent, h } from 'vue'
 
 interface Props {
-  message: string
+  message: string | null
   type?: 'success' | 'error' | 'info' | 'warning'
   autoDismiss?: boolean
   duration?: number

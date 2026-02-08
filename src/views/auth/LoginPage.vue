@@ -1,5 +1,5 @@
 <template>
-  <AppAlert :message="errorMessage" type="error" @close="clearError" />
+  <AppAlert :message="error" type="error" @close="clearError" />
 
   <AppAlert :message="successMessage" type="success" @close="clearSuccess" />
 
@@ -13,6 +13,7 @@
         autocomplete="username"
         inputmode="email"
         :error="emailError"
+        :disabled="isLoading"
         @blur="emailValidation.validate"
         required
       />
@@ -24,6 +25,7 @@
         placeholder="Password"
         autocomplete="current-password"
         :error="passwordError"
+        :disabled="isLoading"
         @blur="passwordValidation.validate"
         required
       />
@@ -31,7 +33,11 @@
       <div class="flex text-xs sm:text-sm">
         <div class="flex gap-2.5 mr-auto flex-row items-center"></div>
 
-        <RouterLink class="opacity-70 hover:opacity-100 transition-opacity" to="/forgot-password">
+        <RouterLink
+          class="opacity-70 hover:opacity-100 transition-opacity"
+          to="/forgot-password"
+          :tabindex="isLoading ? -1 : 0"
+        >
           Forgot Password?
         </RouterLink>
       </div>
@@ -39,7 +45,7 @@
       <SubmitButton
         label="Login"
         loading-text="Signing in..."
-        :loading="isSubmitting"
+        :loading="isLoading"
         :disabled="!isFormValid"
       />
     </form>
@@ -50,8 +56,8 @@
 import { ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.store'
+import { useLogin } from '@/composables/useLogin'
 import { safeRedirectTarget } from '@/utils/safeRedirect'
-import { useAlert } from '@/composables/useAlert'
 import { useEmailValidation, usePasswordValidation } from '@/composables/useFormValidation'
 import AppAlert from '@/components/ui/AppAlert.vue'
 import AuthCard from '@/components/ui/AuthCard.vue'
@@ -61,12 +67,14 @@ import SubmitButton from '@/components/ui/SubmitButton.vue'
 const router = useRouter()
 const route = useRoute()
 const auth = useAuthStore()
-const { errorMessage, successMessage, showError, clearError, clearSuccess } = useAlert()
+
+// Composables
+const { login, isLoading, error, success, resetState } = useLogin()
 
 // Form state
 const email = ref('')
 const password = ref('')
-const isSubmitting = ref(false)
+const successMessage = ref<string | null>(null)
 
 // Validations
 const emailValidation = useEmailValidation(email)
@@ -81,39 +89,41 @@ const isFormValid = computed(() => {
 })
 
 // Methods
-const handleSubmit = async () => {
-  if (isSubmitting.value) return
+const clearError = () => {
+  error.value = null
+}
 
-  clearError()
+const clearSuccess = () => {
+  successMessage.value = null
+}
+
+const handleSubmit = async () => {
+  // Prevent double submission
+  if (isLoading.value) return
+
+  // Clear previous messages
+  resetState()
   clearSuccess()
 
-  // Validate fields
   const isEmailValid = emailValidation.validate()
   const isPasswordValid = passwordValidation.validate()
 
-  if (!isEmailValid || !isPasswordValid) {
-    showError('Mohon periksa input yang kamu isi')
+  if (!isEmailValid || !isPasswordValid || !isFormValid.value) {
+    error.value = 'Mohon periksa input yang kamu isi'
     return
   }
-
-  if (!isFormValid.value) {
-    showError('Mohon periksa input yang kamu isi')
-    return
-  }
-
-  isSubmitting.value = true
 
   try {
-    await auth.login(email.value.trim(), password.value)
+    // Login via composable
+    await login(email.value, password.value)
 
-    const target = safeRedirectTarget(route.query.redirect, auth.role, '/dashboard')
-
-    await router.replace(target)
+    // Success! Handle redirect
+    if (success.value) {
+      const target = safeRedirectTarget(route.query.redirect, auth.role, '/dashboard')
+      await router.replace(target)
+    }
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Email atau password salah'
-    showError(message)
-  } finally {
-    isSubmitting.value = false
+    console.error('Login failed:', err)
   }
 }
 </script>
