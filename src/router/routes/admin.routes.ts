@@ -1,16 +1,16 @@
 // router/routes/admin.routes.ts
 import type { RouteRecordRaw } from 'vue-router'
 import DashboardPage from '@/views/admin/DashboardPage.vue'
-import DefaultLayout from '@/layouts/DefaultLayout.vue'
+import DashboardLayout from '@/layouts/DashboardLayout.vue'
 
 const adminRoutes: RouteRecordRaw[] = [
   {
     path: '/',
-    component: DefaultLayout,
+    component: DashboardLayout,
     meta: { requiresAuth: true, roles: ['admin', 'editor'] },
     children: [
       {
-        path: 'dashboard',
+        path: '/dashboard',
         name: 'admin.dashboard',
         component: DashboardPage,
       },
