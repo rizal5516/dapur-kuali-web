@@ -29,7 +29,7 @@ export async function initMidoneAuth(): Promise<void> {
     '/assets/js/vendors/lucide.js',
     '/assets/js/components/base/page-loader.js',
     '/assets/js/components/base/lucide.js',
-    '/assets/js/components/theme-switcher.js'
+    '/assets/js/components/theme-switcher.js',
   ]
 
   await loadScripts(authScripts)
@@ -49,7 +49,7 @@ export async function initMidoneDashboard(): Promise<void> {
     '/assets/js/themes/rubick.js',
     '/assets/js/utils/helper.js',
     '/assets/js/components/base/tippy.js',
-    '/assets/js/components/theme-switcher.js'
+    '/assets/js/components/theme-switcher.js',
   ]
 
   await loadScripts(dashboardScripts)

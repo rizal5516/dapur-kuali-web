@@ -68,19 +68,15 @@ const router = useRouter()
 const route = useRoute()
 const auth = useAuthStore()
 
-// Composables
 const { login, isLoading, error, success, resetState } = useLogin()
 
-// Form state
 const email = ref('')
 const password = ref('')
 const successMessage = ref<string | null>(null)
 
-// Validations
 const emailValidation = useEmailValidation(email)
 const passwordValidation = usePasswordValidation(password, { minLength: 6 })
 
-// Computed properties
 const emailError = computed(() => emailValidation.error.value)
 const passwordError = computed(() => passwordValidation.error.value)
 
@@ -88,7 +84,6 @@ const isFormValid = computed(() => {
   return emailValidation.isValid.value && passwordValidation.isValid.value
 })
 
-// Methods
 const clearError = () => {
   error.value = null
 }
@@ -98,10 +93,8 @@ const clearSuccess = () => {
 }
 
 const handleSubmit = async () => {
-  // Prevent double submission
   if (isLoading.value) return
 
-  // Clear previous messages
   resetState()
   clearSuccess()
 
@@ -114,10 +107,8 @@ const handleSubmit = async () => {
   }
 
   try {
-    // Login via composable
     await login(email.value, password.value)
 
-    // Success! Handle redirect
     if (success.value) {
       const target = safeRedirectTarget(route.query.redirect, auth.role, '/dashboard')
       await router.replace(target)

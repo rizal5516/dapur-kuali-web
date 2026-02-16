@@ -4,7 +4,6 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from '../router'
 import { initMidoneAuth } from '../plugins/midone'
-import LucideIconsPlugin from '@/plugins/lucide'
 
 async function bootstrap() {
   await initMidoneAuth()
@@ -12,7 +11,6 @@ async function bootstrap() {
   const app = createApp(App)
 
   app.use(createPinia())
-  app.use(LucideIconsPlugin)
   app.use(router)
 
   app.mount('#app')

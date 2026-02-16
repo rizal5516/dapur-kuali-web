@@ -73,13 +73,11 @@ const { resetPassword, isLoading } = useResetPassword()
 const { errorMessage, successMessage, showError, showSuccess, clearError, clearSuccess } =
   useAlert()
 
-// Form state
 const email = ref('')
 const token = ref('')
 const password = ref('')
 const passwordConfirmation = ref('')
 
-// Validations
 const passwordValidation = usePasswordValidation(password, {
   minLength: PASSWORD_MIN_LENGTH,
   requireStrength: true,
@@ -87,7 +85,6 @@ const passwordValidation = usePasswordValidation(password, {
 
 const confirmationValidation = usePasswordConfirmationValidation(password, passwordConfirmation)
 
-// Computed properties
 const passwordError = computed(() => passwordValidation.error.value)
 const confirmationError = computed(() => confirmationValidation.error.value)
 
@@ -99,12 +96,10 @@ const isFormValid = computed(() => {
   )
 })
 
-// Methods
 const handleSubmit = async () => {
   clearError()
   clearSuccess()
 
-  // Final validation
   const isPasswordValid = passwordValidation.validate()
   const isConfirmationValid = confirmationValidation.validate()
 
@@ -128,11 +123,9 @@ const handleSubmit = async () => {
 
     showSuccess(response.message)
 
-    // Clear sensitive data
     password.value = ''
     passwordConfirmation.value = ''
 
-    // Redirect ke login
     setTimeout(() => {
       router.push('/login')
     }, 2000)
@@ -140,18 +133,15 @@ const handleSubmit = async () => {
     const message = err instanceof Error ? err.message : 'Terjadi kesalahan'
     showError(message)
 
-    // Clear password on error untuk security
     password.value = ''
     passwordConfirmation.value = ''
   }
 }
 
-// Initialize & validate query params
 onMounted(() => {
   const tokenParam = route.query.token
   const emailParam = route.query.email
 
-  // Validate token exists and is string
   if (!tokenParam || typeof tokenParam !== 'string' || !isValidToken(tokenParam)) {
     showError('Link reset password tidak valid')
     setTimeout(() => {
@@ -160,7 +150,6 @@ onMounted(() => {
     return
   }
 
-  // Validate email exists and is string
   if (!emailParam || typeof emailParam !== 'string' || !isValidEmail(emailParam)) {
     showError('Link reset password tidak valid')
     setTimeout(() => {

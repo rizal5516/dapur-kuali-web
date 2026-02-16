@@ -1,7 +1,6 @@
 import type { App, Component, Plugin } from 'vue'
 
 import {
-  // === Navigation Icons ===
   CircleGauge,
   ChevronDown,
   ChevronLeft,
@@ -9,14 +8,10 @@ import {
   ChevronUp,
   Menu,
   X,
-
-  // === User & Account Icons ===
   Users,
   User,
   UserCircle,
   UserPlus,
-
-  // === Action Icons ===
   MoveRight,
   Power,
   LogOut,
@@ -25,41 +20,30 @@ import {
   Plus,
   CheckSquare,
   Trash,
-
-  // === Security Icons ===
   ShieldAlert,
   FileLock,
   FileQuestion,
   Lock,
   Unlock,
-
-  // === Content Icons ===
   Home,
   FileText,
   File,
   Folder,
   FolderOpen,
   Printer,
-
-  // === System Icons ===
   Search,
   Bell,
   Mail,
   Calendar,
   Clock,
-
-  // === Status Icons ===
   CheckCircle,
   XCircle,
   AlertCircle,
   Info,
-
-  // === Chart Icons ===
   ChartNoAxesColumn,
 } from 'lucide-vue-next'
 
 const ICON_REGISTRY = {
-  // Navigation
   CircleGauge,
   ChevronDown,
   ChevronLeft,
@@ -68,13 +52,11 @@ const ICON_REGISTRY = {
   Menu,
   X,
 
-  // User & Account
   Users,
   User,
   UserCircle,
   UserPlus,
 
-  // Actions
   MoveRight,
   Power,
   LogOut,
@@ -84,14 +66,12 @@ const ICON_REGISTRY = {
   CheckSquare,
   Trash,
 
-  // Security
   ShieldAlert,
   FileLock,
   FileQuestion,
   Lock,
   Unlock,
 
-  // Content
   Home,
   FileText,
   File,
@@ -99,20 +79,17 @@ const ICON_REGISTRY = {
   FolderOpen,
   Printer,
 
-  // System
   Search,
   Bell,
   Mail,
   Calendar,
   Clock,
 
-  // Status
   CheckCircle,
   XCircle,
   AlertCircle,
   Info,
 
-  // Charts
   ChartNoAxesColumn,
 } as const
 
@@ -127,7 +104,6 @@ export const LucideIconsPlugin: Plugin = {
   install(app: App, options: LucidePluginOptions = {}) {
     const { prefix = '', devMode = import.meta.env.DEV } = options
 
-    // Validation: prevent plugin re-installation
     if (app.config.globalProperties.$lucideInstalled) {
       if (devMode) {
         console.warn('[LucidePlugin] Plugin already installed. Skipping re-installation.')
@@ -135,7 +111,6 @@ export const LucideIconsPlugin: Plugin = {
       return
     }
 
-    // Register icons dengan error handling
     let registeredCount = 0
     let failedCount = 0
 
@@ -143,7 +118,6 @@ export const LucideIconsPlugin: Plugin = {
       try {
         const componentName = `${prefix}${name}`
 
-        // Validasi component sebelum register
         if (!component || typeof component !== 'object') {
           throw new Error(`Invalid component: ${name}`)
         }
@@ -159,7 +133,6 @@ export const LucideIconsPlugin: Plugin = {
       }
     })
 
-    // Development mode logging
     if (devMode) {
       console.info(
         `[LucidePlugin] Registered ${registeredCount} icons` +
@@ -167,10 +140,8 @@ export const LucideIconsPlugin: Plugin = {
       )
     }
 
-    // Mark as installed
     app.config.globalProperties.$lucideInstalled = true
 
-    // Provide icon list untuk debugging
     if (devMode) {
       app.provide('lucideIcons', Object.keys(ICON_REGISTRY))
     }
@@ -188,7 +159,6 @@ export function useLucideIcon(name: AvailableIconName): Component {
       )
     }
 
-    // Fallback ke dummy component untuk prevent crash
     return CircleGauge
   }
 

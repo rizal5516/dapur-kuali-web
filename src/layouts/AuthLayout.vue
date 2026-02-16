@@ -1,13 +1,5 @@
 <template>
-  <!-- Page Loader (optional) -->
-  <div
-    v-if="showLoader"
-    class="page-loader bg-background fixed inset-0 z-[100] flex items-center justify-center transition-opacity"
-    aria-hidden="true"
-    :style="{ opacity: loaderOpacity }"
-  >
-    <div class="loader-spinner !w-14"></div>
-  </div>
+  <PageLoader :show="showLoader" />
 
   <div
     class="relative h-screen lg:overflow-hidden bg-primary bg-noise xl:bg-background xl:bg-none before:hidden before:xl:block before:content-[''] before:w-[57%] before:-mt-[28%] before:-mb-[16%] before:-ml-[12%] before:absolute before:inset-y-0 before:left-0 before:transform before:rotate-[6deg] before:bg-primary/[.95] before:bg-noise before:rounded-[35%] after:hidden after:xl:block after:content-[''] after:w-[57%] after:-mt-[28%] after:-mb-[16%] after:-ml-[12%] after:absolute after:inset-y-0 after:left-0 after:transform after:rotate-[6deg] after:border after:bg-accent after:bg-cover after:blur-xl after:rounded-[35%] after:border-[20px] after:border-primary"
@@ -47,45 +39,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick, onBeforeUnmount } from 'vue'
+import { onMounted, nextTick } from 'vue'
+import { usePageLoader } from '@/composables/usePageLoader'
+import PageLoader from '@/components/ui/PageLoader.vue'
 
-const showLoader = ref(true)
-const loaderOpacity = ref('1')
-
-let fadeTimer: number | null = null
-let hideTimer: number | null = null
-
-const MIN_LOADER_MS = 1000
-const FADE_MS = 200
-
-function clearTimers() {
-  if (fadeTimer) window.clearTimeout(fadeTimer)
-  if (hideTimer) window.clearTimeout(hideTimer)
-  fadeTimer = hideTimer = null
-}
-
-onMounted(async () => {
-  try {
-    await nextTick()
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const w = window as any
-    if (w?.lucide?.createIcons) w.lucide.createIcons()
-    fadeTimer = window.setTimeout(() => {
-      loaderOpacity.value = '0'
-
-      hideTimer = window.setTimeout(() => {
-        showLoader.value = false
-        loaderOpacity.value = '1'
-      }, FADE_MS)
-    }, MIN_LOADER_MS)
-  } catch (e) {
-    console.error('Failed to init AuthLayout scripts:', e)
-    showLoader.value = false
-  }
+const { showLoader, start } = usePageLoader({
+  minDuration: 1000,
+  fadeDuration: 200,
+  onError: (err) => {
+    console.error('Dashboard init failed:', err)
+  },
 })
 
-onBeforeUnmount(() => {
-  clearTimers()
+onMounted(async () => {
+  start(async () => {
+    await nextTick()
+  })
 })
 </script>

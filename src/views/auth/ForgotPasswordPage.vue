@@ -37,24 +37,18 @@ import AuthCard from '@/components/ui/AuthCard.vue'
 import FormInput from '@/components/ui/FormInput.vue'
 import SubmitButton from '@/components/ui/SubmitButton.vue'
 
-// Composables
 const { forgotPassword, isLoading, error, success, successMessage, resetState } =
   useForgotPassword()
 
-// Form state
 const email = ref('')
 
-// Validations
 const emailValidation = useEmailValidation(email)
 
-// Computed properties
 const emailError = computed(() => emailValidation.error.value)
 const isFormValid = computed(() => emailValidation.isValid.value)
 
-// Timer untuk auto-reset UI setelah sukses
 let resetTimer: number | null = null
 
-// Methods
 const clearResetTimer = () => {
   if (resetTimer) {
     window.clearTimeout(resetTimer)
@@ -76,14 +70,11 @@ const resetUI = () => {
 }
 
 const handleSubmit = async () => {
-  // Prevent double submission
   if (isLoading.value) return
 
-  // Clear previous timers dan messages
   clearResetTimer()
   resetState()
 
-  // Validate email before submit
   const isEmailValid = emailValidation.validate()
 
   if (!isEmailValid || !isFormValid.value) {
@@ -94,20 +85,16 @@ const handleSubmit = async () => {
   try {
     await forgotPassword(email.value)
 
-    // Success! Auto-reset UI after 6 seconds
     if (success.value) {
       resetTimer = window.setTimeout(() => {
         resetUI()
       }, 6000)
     }
   } catch (err) {
-    // Error sudah di-handle di composable
-    // Component hanya perlu display error yang sudah ada di error.value
     console.error('Forgot password failed:', err)
   }
 }
 
-// Cleanup on unmount
 onBeforeUnmount(() => {
   clearResetTimer()
 })
