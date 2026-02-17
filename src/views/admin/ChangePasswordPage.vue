@@ -1,4 +1,5 @@
 <template>
+  <AppAlert :message="alertMessage" :type="alertType" @close="clearAlert" />
   <div class="mt-8 flex items-center">
     <h2 class="mr-auto text-lg font-medium">Change Password</h2>
   </div>
@@ -10,16 +11,17 @@
         <div class="flex items-center border-b p-5">
           <h2 class="mr-auto text-base font-medium">Change Password</h2>
         </div>
+
         <div class="p-5">
           <form class="flex flex-col gap-3" @submit.prevent="handleSubmit">
             <FormInput
-              id="change-password-old"
-              v-model="form.oldPassword"
+              id="change-password-current"
+              v-model="form.currentPassword"
               type="password"
-              label="Old Password"
-              placeholder="Enter old password"
+              label="Current Password"
+              placeholder="Enter current password"
               autocomplete="current-password"
-              :error="errors.oldPassword"
+              :error="errors.currentPassword"
               required
             />
 
@@ -64,7 +66,9 @@
 <script setup lang="ts">
 import FormInput from '@/components/ui/FormInput.vue'
 import SubmitButton from '@/components/ui/SubmitButton.vue'
+import AppAlert from '@/components/ui/AppAlert.vue'
 import { useChangePassword } from '@/composables/useChangePassword'
 
-const { form, errors, isLoading, handleSubmit } = useChangePassword()
+const { form, errors, isLoading, alertMessage, alertType, clearAlert, handleSubmit } =
+  useChangePassword()
 </script>

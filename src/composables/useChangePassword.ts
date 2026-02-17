@@ -1,83 +1,115 @@
-import { reactive, ref } from 'vue'
-
-interface ChangePasswordForm {
-  oldPassword: string
-  newPassword: string
-  confirmPassword: string
-}
-
-interface ChangePasswordErrors {
-  oldPassword?: string
-  newPassword?: string
-  confirmPassword?: string
-}
-
-const MIN_PASSWORD_LENGTH = 8
+import { reactive, ref, computed } from 'vue'
+import { useChangePasswordStore } from '@/stores/changePassword.store'
+import { getPasswordError, passwordsMatch } from '@/utils/password.utils'
+import type { ChangePasswordForm, ChangePasswordFormErrors } from '@/types/changePassword.types'
 
 export function useChangePassword() {
+  const store = useChangePasswordStore()
+
   const form = reactive<ChangePasswordForm>({
-    oldPassword: '',
+    currentPassword: '',
     newPassword: '',
     confirmPassword: '',
   })
 
-  const errors = reactive<ChangePasswordErrors>({})
-  const isLoading = ref(false)
+  const clientErrors = reactive<ChangePasswordFormErrors>({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  })
 
-  const validate = (): boolean => {
-    errors.oldPassword = undefined
-    errors.newPassword = undefined
-    errors.confirmPassword = undefined
+  const alertMessage = ref<string | null>(null)
+  const alertType = ref<'success' | 'error'>('success')
 
-    if (!form.oldPassword) {
-      errors.oldPassword = 'Old password is required.'
-    }
-
-    if (!form.newPassword) {
-      errors.newPassword = 'New password is required.'
-    } else if (form.newPassword.length < MIN_PASSWORD_LENGTH) {
-      errors.newPassword = `New password must be at least ${MIN_PASSWORD_LENGTH} characters.`
-    } else if (form.newPassword === form.oldPassword) {
-      errors.newPassword = 'New password must be different from the old password.'
-    }
-
-    if (!form.confirmPassword) {
-      errors.confirmPassword = 'Please confirm your new password.'
-    } else if (form.confirmPassword !== form.newPassword) {
-      errors.confirmPassword = 'Passwords do not match.'
-    }
-
-    return !errors.oldPassword && !errors.newPassword && !errors.confirmPassword
+  function showAlert(message: string, type: 'success' | 'error'): void {
+    alertMessage.value = message
+    alertType.value = type
   }
 
-  const resetForm = () => {
-    form.oldPassword = ''
+  function clearAlert(): void {
+    alertMessage.value = null
+  }
+
+  const isLoading = computed(() => store.isLoading)
+
+  const errors = computed(() => ({
+    currentPassword: clientErrors.currentPassword || store.serverErrors.currentPassword || '',
+    newPassword: clientErrors.newPassword || store.serverErrors.newPassword || '',
+    confirmPassword: clientErrors.confirmPassword || store.serverErrors.confirmPassword || '',
+  }))
+
+  function validate(): boolean {
+    clearClientErrors()
+
+    let valid = true
+
+    if (!form.currentPassword) {
+      clientErrors.currentPassword = 'Current password is required.'
+      valid = false
+    }
+
+    const newPasswordError = getPasswordError(form.newPassword)
+    if (newPasswordError) {
+      clientErrors.newPassword = newPasswordError
+      valid = false
+    }
+
+    if (form.newPassword && form.newPassword === form.currentPassword) {
+      clientErrors.newPassword = 'New password must be different from the current password.'
+      valid = false
+    }
+
+    if (!passwordsMatch(form.newPassword, form.confirmPassword)) {
+      clientErrors.confirmPassword = 'Passwords do not match.'
+      valid = false
+    }
+
+    return valid
+  }
+
+  async function handleSubmit(): Promise<void> {
+    clearAlert()
+
+    const isValid = validate()
+    if (!isValid) return
+
+    const success = await store.submit({
+      current_password: form.currentPassword,
+      new_password: form.newPassword,
+      new_password_confirmation: form.confirmPassword,
+    })
+
+    if (success) {
+      const message = store.successMessage
+      resetForm()
+      showAlert(message, 'success')
+    } else if (store.errorMessage) {
+      showAlert(store.errorMessage, 'error')
+    }
+  }
+
+  function clearClientErrors(): void {
+    clientErrors.currentPassword = ''
+    clientErrors.newPassword = ''
+    clientErrors.confirmPassword = ''
+    store.reset()
+  }
+
+  function resetForm(): void {
+    form.currentPassword = ''
     form.newPassword = ''
     form.confirmPassword = ''
-  }
-
-  const handleSubmit = async () => {
-    if (!validate()) return
-
-    isLoading.value = true
-
-    try {
-      // TODO: Ganti dengan pemanggilan API service yang sesuai
-      // await authService.changePassword({ ... })
-      resetForm()
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
-      // TODO: Tangani error dari API (misal: old password salah)
-      // errors.oldPassword = 'Old password is incorrect.'
-    } finally {
-      isLoading.value = false
-    }
+    clearClientErrors()
   }
 
   return {
     form,
     errors,
     isLoading,
+    alertMessage,
+    alertType,
+    clearAlert,
     handleSubmit,
+    resetForm,
   }
 }
