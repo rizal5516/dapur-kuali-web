@@ -43,6 +43,11 @@ import {
   ChartNoAxesColumn,
 } from 'lucide-vue-next'
 
+/**
+ * Registry terpusat semua icon yang tersedia di aplikasi.
+ * Hanya tambahkan icon yang benar-benar digunakan untuk menjaga bundle size.
+ * `as const` memastikan type inference bekerja optimal dan registry immutable.
+ */
 const ICON_REGISTRY = {
   CircleGauge,
   ChevronDown,
@@ -100,13 +105,22 @@ export interface LucidePluginOptions {
   devMode?: boolean
 }
 
+function isValidVueComponent(value: unknown): value is Component {
+  if (typeof value === 'function') {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+    return (value as Function).prototype === undefined
+  }
+  if (!value || typeof value !== 'object') return false
+  return 'render' in value || 'setup' in value || '__name' in value || 'props' in value
+}
+
 export const LucideIconsPlugin: Plugin = {
   install(app: App, options: LucidePluginOptions = {}) {
     const { prefix = '', devMode = import.meta.env.DEV } = options
 
     if (app.config.globalProperties.$lucideInstalled) {
       if (devMode) {
-        console.warn('[LucidePlugin] Plugin already installed. Skipping re-installation.')
+        console.warn('[LucidePlugin] Plugin sudah terpasang. Instalasi dilewati.')
       }
       return
     }
@@ -114,52 +128,48 @@ export const LucideIconsPlugin: Plugin = {
     let registeredCount = 0
     let failedCount = 0
 
-    Object.entries(ICON_REGISTRY).forEach(([name, component]) => {
-      try {
-        const componentName = `${prefix}${name}`
-
-        if (!component || typeof component !== 'object') {
-          throw new Error(`Invalid component: ${name}`)
-        }
-
-        app.component(componentName, component as Component)
-        registeredCount++
-      } catch (error) {
+    for (const [name, component] of Object.entries(ICON_REGISTRY)) {
+      if (!isValidVueComponent(component)) {
         failedCount++
-
         if (devMode) {
-          console.error(`[LucidePlugin] Failed to register icon: ${name}`, error)
+          console.error(`[LucidePlugin] "${name}" bukan Vue component yang valid. Dilewati.`)
         }
+        continue
       }
-    })
+
+      app.component(`${prefix}${name}`, component)
+      registeredCount++
+    }
 
     if (devMode) {
-      console.info(
-        `[LucidePlugin] Registered ${registeredCount} icons` +
-          (failedCount > 0 ? ` (${failedCount} failed)` : ''),
-      )
+      const failedInfo = failedCount > 0 ? ` (${failedCount} gagal)` : ''
+      console.info(`[LucidePlugin] ${registeredCount} icon terdaftar${failedInfo}`)
     }
 
     app.config.globalProperties.$lucideInstalled = true
 
-    if (devMode) {
-      app.provide('lucideIcons', Object.keys(ICON_REGISTRY))
-    }
+    // SECURITY: daftar icon tidak diekspos via provide.
+    // Komponen child tidak butuh akses langsung ke registry.
   },
 }
 
+/**
+ * Ambil icon dari registry berdasarkan nama dengan type safety penuh.
+ *
+ * Jika icon tidak ditemukan (nama salah / belum didaftarkan):
+ * - DEV: log error ke console dengan nama yang dicari
+ * - Production: diam — tidak ada detail internal yang terekspos
+ * - Fallback ke `X` agar terlihat jelas ada yang salah, bukan diam-diam
+ *   render icon yang menyesatkan seperti CircleGauge (dashboard icon)
+ */
 export function useLucideIcon(name: AvailableIconName): Component {
   const icon = ICON_REGISTRY[name]
 
-  if (!icon) {
+  if (!isValidVueComponent(icon)) {
     if (import.meta.env.DEV) {
-      console.error(
-        `[useLucideIcon] Icon "${name}" not found in registry.` +
-          ` Available icons: ${Object.keys(ICON_REGISTRY).join(', ')}`,
-      )
+      console.error(`[useLucideIcon] Icon "${name}" tidak ditemukan atau tidak valid di registry.`)
     }
-
-    return CircleGauge
+    return X as Component
   }
 
   return icon as Component
