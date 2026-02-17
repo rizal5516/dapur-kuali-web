@@ -7,11 +7,6 @@ const publicRoutes: RouteRecordRaw[] = [
     name: 'home',
     component: HomePage,
   },
-  // {
-  //   path: '/403',
-  //   name: 'forbidden',
-  //   component: () => import('@/views/errors/ForbiddenPage.vue'),
-  // },
 ]
 
 export default publicRoutes

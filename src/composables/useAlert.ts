@@ -8,7 +8,6 @@ export interface AlertState {
   type: AlertType
 }
 
-
 export const useAlert = () => {
   const errorMessage = ref('')
   const successMessage = ref('')
@@ -79,13 +78,11 @@ export const useAlert = () => {
   }
 
   return {
-    // State
     errorMessage,
     successMessage,
     infoMessage,
     warningMessage,
 
-    // Methods
     showError,
     showSuccess,
     showInfo,

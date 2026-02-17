@@ -1,6 +1,6 @@
-// router/routes/admin.routes.ts
 import type { RouteRecordRaw } from 'vue-router'
 import DashboardPage from '@/views/admin/DashboardPage.vue'
+import ResetPasswordPage from '@/views/admin/ResetPasswordPage.vue'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
 
 const adminRoutes: RouteRecordRaw[] = [
@@ -10,9 +10,14 @@ const adminRoutes: RouteRecordRaw[] = [
     meta: { requiresAuth: true, roles: ['admin', 'editor'] },
     children: [
       {
-        path: '/dashboard',
+        path: 'dashboard',
         name: 'admin.dashboard',
         component: DashboardPage,
+      },
+      {
+        path: 'reset-password',
+        name: 'admin.reset-password',
+        component: ResetPasswordPage,
       },
     ],
   },

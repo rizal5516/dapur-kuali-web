@@ -21,17 +21,7 @@
         <li
           class="[&:not(:last-child)&gt;a]:text-(--color-link) text-(--color-base) before:bg-(image:--background-image-chevron) relative before:absolute before:inset-y-0 before:my-auto before:-ml-4 before:size-2 before:-rotate-90 before:bg-center before:bg-no-repeat before:opacity-70 first:before:hidden"
         >
-          <a href="">Apps</a>
-        </li>
-        <li
-          class="[&:not(:last-child)&gt;a]:text-(--color-link) text-(--color-base) before:bg-(image:--background-image-chevron) relative before:absolute before:inset-y-0 before:my-auto before:-ml-4 before:size-2 before:-rotate-90 before:bg-center before:bg-no-repeat before:opacity-70 first:before:hidden"
-        >
-          <a href="">Dashboards</a>
-        </li>
-        <li
-          class="[&:not(:last-child)&gt;a]:text-(--color-link) text-(--color-base) before:bg-(image:--background-image-chevron) relative before:absolute before:inset-y-0 before:my-auto before:-ml-4 before:size-2 before:-rotate-90 before:bg-center before:bg-no-repeat before:opacity-70 first:before:hidden"
-        >
-          <a href="">Overview</a>
+          <router-link :to="{ name: 'admin.dashboard' }"> Dashboard </router-link>
         </li>
       </ul>
       <div class="group/profile relative size-9 flex-none">
@@ -76,15 +66,21 @@
             </div>
             <div class="bg-foreground/5 h-px"></div>
             <div class="flex flex-col gap-0.5">
-              <a class="hover:bg-foreground/5 -mx-3 flex gap-2.5 rounded-lg px-4 py-1.5" href="">
+              <button
+                type="button"
+                class="hover:bg-foreground/5 -mx-3 flex gap-2.5 rounded-lg px-4 py-1.5 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
+                :disabled="isLoggingOut"
+                @click="handleLogout"
+              >
                 <component
                   :is="menuIcons.power"
                   :size="16"
                   :stroke-width="1.5"
                   class="[--color:currentColor] stroke-(--color) fill-(--color)/25"
+                  :class="{ 'animate-spin': isLoggingOut }"
                 />
                 Logout
-              </a>
+              </button>
             </div>
           </div>
         </div>
@@ -95,6 +91,8 @@
 
 <script setup lang="ts">
 import { useMenuIcons } from '@/composables/useMenuIcons'
+import { useLogout } from '@/composables/useLogout'
 
 const menuIcons = useMenuIcons()
+const { isLoggingOut, handleLogout } = useLogout()
 </script>

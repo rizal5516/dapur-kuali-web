@@ -63,7 +63,7 @@ import {
   PASSWORD_MIN_LENGTH,
 } from '@/composables/useFormValidation'
 import AppAlert from '@/components/ui/AppAlert.vue'
-import AuthCard from '@/components/ui/AuthCard.vue'
+import AuthCard from '@/components/ui/auth/AuthCard.vue'
 import FormInput from '@/components/ui/FormInput.vue'
 import SubmitButton from '@/components/ui/SubmitButton.vue'
 

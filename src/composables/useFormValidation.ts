@@ -32,7 +32,7 @@ export const useEmailValidation = (email: Ref<string>) => {
     error.value = ''
 
     if (!email.value) {
-      return true // Skip validation jika kosong
+      return true
     }
 
     if (!isValidEmail(email.value)) {
@@ -67,7 +67,7 @@ export const usePasswordValidation = (
     error.value = ''
 
     if (!password.value) {
-      return true // Skip validation jika kosong
+      return true
     }
 
     if (password.value.length < minLength) {
@@ -102,7 +102,7 @@ export const usePasswordConfirmationValidation = (
     error.value = ''
 
     if (!confirmation.value) {
-      return true // Skip validation jika kosong
+      return true
     }
 
     if (confirmation.value !== password.value) {
@@ -113,7 +113,9 @@ export const usePasswordConfirmationValidation = (
     return true
   }
 
-  const isValid = computed(() => !error.value && !!confirmation.value && confirmation.value === password.value)
+  const isValid = computed(
+    () => !error.value && !!confirmation.value && confirmation.value === password.value,
+  )
 
   return {
     error,
@@ -123,7 +125,6 @@ export const usePasswordConfirmationValidation = (
 }
 
 export const sanitizeMessage = (message: string): string => {
-  // Basic HTML entity encoding
   return message
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')

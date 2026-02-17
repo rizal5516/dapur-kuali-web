@@ -35,7 +35,7 @@
 
         <RouterLink
           class="opacity-70 hover:opacity-100 transition-opacity"
-          to="/forgot-password"
+          :to="{ name: 'forgot-password' }"
           :tabindex="isLoading ? -1 : 0"
         >
           Forgot Password?
@@ -60,7 +60,7 @@ import { useLogin } from '@/composables/useLogin'
 import { safeRedirectTarget } from '@/utils/safeRedirect'
 import { useEmailValidation, usePasswordValidation } from '@/composables/useFormValidation'
 import AppAlert from '@/components/ui/AppAlert.vue'
-import AuthCard from '@/components/ui/AuthCard.vue'
+import AuthCard from '@/components/ui/auth/AuthCard.vue'
 import FormInput from '@/components/ui/FormInput.vue'
 import SubmitButton from '@/components/ui/SubmitButton.vue'
 

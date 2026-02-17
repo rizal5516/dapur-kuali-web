@@ -18,27 +18,27 @@
       <div
         class="relative z-10 hidden h-[65px] w-[275px] flex-none items-center overflow-hidden px-6 duration-200 xl:flex group-[.side-menu--collapsed.side-menu--on-hover]:xl:w-[275px] group-[.side-menu--collapsed]:xl:w-[110px]"
       >
-        <a
+        <router-link
+          :to="{ name: 'admin.dashboard' }"
           class="flex items-center transition-[margin] duration-200 xl:ml-2 group-[.side-menu--collapsed.side-menu--on-hover]:xl:ml-2 group-[.side-menu--collapsed]:xl:ml-6"
-          href=""
         >
-          <img class="size-5" src="/assets/images/logo.svg" />
+          <img class="size-5" :src="logo" />
           <div
             class="ml-3.5 text-nowrap transition-opacity group-[.side-menu--collapsed.side-menu--on-hover]:xl:opacity-100 group-[.side-menu--collapsed]:xl:opacity-0"
           >
             <span class="text-base font-medium">CMS </span>
             <span class="text-base font-light">Dapur Kuali</span>
           </div>
-        </a>
-        <a
+        </router-link>
+        <router-link
+          :to="{ name: '' }"
           class="toggle-compact-menu border-background/20 bg-background/10 dark:bg-foreground/[.02] dark:border-foreground/[.09] ml-auto hidden items-center justify-center rounded-md border py-0.5 pl-0.5 pr-1 opacity-70 transition-[opacity,transform] hover:opacity-100 group-[.side-menu--collapsed]:xl:rotate-180 group-[.side-menu--collapsed.side-menu--on-hover]:xl:opacity-100 group-[.side-menu--collapsed]:xl:opacity-0 2xl:flex"
-          href=""
         >
           <component
             :is="menuIcons.chevronLeft"
             class="size-4 stroke-[1.5] [--color:currentColor] stroke-(--color) fill-(--color)/25 side-menu__link__icon"
           />
-        </a>
+        </router-link>
       </div>
       <div
         class="w-full h-full z-20 px-4 overflow-y-auto overflow-x-hidden pb-3 [&:-webkit-scrollbar]:w-0 scroll-smooth [&_.simplebar-scrollbar]:before:!bg-background/70 [-webkit-mask-image:_linear-gradient(to_top,_rgba(0,_0,_0,_0),_black_30px),_linear-gradient(to_bottom,_rgba(0,_0,_0,_0),_black_30px)] [-webkit-mask-composite:_destination-in]"
@@ -49,50 +49,16 @@
           <!-- END: First Child -->
           <!-- BEGIN: First Child -->
           <li>
-            <a href="javascript:;" class="side-menu__link side-menu__link--active">
+            <router-link
+              :to="{ name: 'admin.dashboard' }"
+              class="side-menu__link side-menu__link--active"
+            >
               <component
                 :is="menuIcons.dashboard"
                 class="size-4 stroke-[1.5] [--color:currentColor] stroke-(--color) fill-(--color)/25 side-menu__link__icon"
               />
-              <div class="side-menu__link__title">Crud</div>
-              <component
-                :is="menuIcons.chevronDown"
-                class="size-4 stroke-[1.5] [--color:currentColor] stroke-(--color) fill-(--color)/25 side-menu__link__chevron transition"
-              />
-            </a>
-            <!-- BEGIN: Second Child -->
-            <ul class="block">
-              <li>
-                <a
-                  href="rubick-side-menu-crud-data-list.html"
-                  class="side-menu__link side-menu__link--active"
-                >
-                  <component
-                    :is="menuIcons.dashboard"
-                    :size="16"
-                    :stroke-width="1.5"
-                    class="[--color:currentColor] stroke-(--color) fill-(--color)/25 side-menu__link__icon"
-                  />
-                  <div class="side-menu__link__title">Data List</div>
-                </a>
-                <!-- BEGIN: Third Child -->
-                <!-- END: Third Child -->
-              </li>
-              <li>
-                <a href="rubick-side-menu-crud-form.html" class="side-menu__link">
-                  <component
-                    :is="menuIcons.dashboard"
-                    :size="16"
-                    :stroke-width="1.5"
-                    class="[--color:currentColor] stroke-(--color) fill-(--color)/25 side-menu__link__icon"
-                  />
-                  <div class="side-menu__link__title">Form</div>
-                </a>
-                <!-- BEGIN: Third Child -->
-                <!-- END: Third Child -->
-              </li>
-            </ul>
-            <!-- END: Second Child -->
+              <div class="side-menu__link__title">Dashboard</div>
+            </router-link>
           </li>
           <!-- END: First Child -->
         </ul>
@@ -108,7 +74,7 @@
           >
             <img
               class="absolute top-0 h-full w-full object-cover"
-              src="/assets/images/fakers/profile-8.jpg"
+              :src="profile8"
               alt="Midone - Admin Dashboard Template"
             />
           </div>
@@ -137,7 +103,10 @@
             </div>
             <div class="bg-foreground/5 h-px"></div>
             <div class="flex flex-col gap-0.5">
-              <a class="hover:bg-foreground/5 -mx-3 flex gap-2.5 rounded-lg px-4 py-1.5" href="">
+              <router-link
+                class="hover:bg-foreground/5 -mx-3 flex gap-2.5 rounded-lg px-4 py-1.5"
+                :to="{ name: '' }"
+              >
                 <component
                   :is="menuIcons.users"
                   :size="16"
@@ -145,8 +114,11 @@
                   class="[--color:currentColor] stroke-(--color) fill-(--color)/25"
                 />
                 Profile
-              </a>
-              <a class="hover:bg-foreground/5 -mx-3 flex gap-2.5 rounded-lg px-4 py-1.5" href="">
+              </router-link>
+              <router-link
+                class="hover:bg-foreground/5 -mx-3 flex gap-2.5 rounded-lg px-4 py-1.5"
+                :to="{ name: 'admin.reset-password' }"
+              >
                 <component
                   :is="menuIcons.fileLock"
                   :size="16"
@@ -154,19 +126,25 @@
                   class="[--color:currentColor] stroke-(--color) fill-(--color)/25"
                 />
                 Reset Password
-              </a>
+              </router-link>
             </div>
             <div class="bg-foreground/5 h-px"></div>
             <div class="flex flex-col gap-0.5">
-              <a class="hover:bg-foreground/5 -mx-3 flex gap-2.5 rounded-lg px-4 py-1.5" href="">
+              <button
+                type="button"
+                class="hover:bg-foreground/5 -mx-3 flex gap-2.5 rounded-lg px-4 py-1.5 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
+                :disabled="isLoggingOut"
+                @click="handleLogout"
+              >
                 <component
                   :is="menuIcons.power"
                   :size="16"
                   :stroke-width="1.5"
                   class="[--color:currentColor] stroke-(--color) fill-(--color)/25"
+                  :class="{ 'animate-spin': isLoggingOut }"
                 />
                 Logout
-              </a>
+              </button>
             </div>
           </div>
         </div>
@@ -176,7 +154,11 @@
 </template>
 
 <script setup lang="ts">
+import logo from '/assets/images/logo.svg'
+import profile8 from '/assets/images/fakers/profile-8.jpg'
 import { useMenuIcons } from '@/composables/useMenuIcons'
+import { useLogout } from '@/composables/useLogout'
 
 const menuIcons = useMenuIcons()
+const { isLoggingOut, handleLogout } = useLogout()
 </script>

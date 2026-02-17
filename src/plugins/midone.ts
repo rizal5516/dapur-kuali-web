@@ -1,6 +1,5 @@
 function loadScript(src: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    // Cek apakah script sudah dimuat sebelumnya
     if (document.querySelector(`script[data-src="${src}"]`)) {
       return resolve()
     }
@@ -39,16 +38,30 @@ export async function initMidoneDashboard(): Promise<void> {
   const dashboardScripts = [
     '/assets/js/vendors/dom.js',
     '/assets/js/vendors/lucide.js',
+    '/assets/js/vendors/tippy.js',
+    '/assets/js/vendors/dayjs.js',
+    '/assets/js/vendors/easepick.js',
     '/assets/js/vendors/popper.js',
     '/assets/js/vendors/dropdown.js',
+    '/assets/js/vendors/chartjs.js',
+    '/assets/js/vendors/vector-map.js',
+    '/assets/js/vendors/tiny-slider.js',
     '/assets/js/vendors/modal.js',
     '/assets/js/vendors/simplebar.js',
-    '/assets/js/vendors/tippy.js',
+    '/assets/js/pages/dashboard-overview-1.js',
     '/assets/js/components/base/page-loader.js',
     '/assets/js/components/base/lucide.js',
+    '/assets/js/components/base/tippy.js',
+    '/assets/js/components/base/easepick.js',
+    '/assets/js/components/report-line-chart.js',
+    '/assets/js/components/report-pie-chart.js',
+    '/assets/js/components/report-donut-chart.js',
+    '/assets/js/components/vector-map.js',
+    '/assets/js/components/report-donut-chart-1.js',
+    '/assets/js/components/simple-line-chart-1.js',
+    '/assets/js/components/base/tiny-slider.js',
     '/assets/js/themes/rubick.js',
     '/assets/js/utils/helper.js',
-    '/assets/js/components/base/tippy.js',
     '/assets/js/components/theme-switcher.js',
   ]
 

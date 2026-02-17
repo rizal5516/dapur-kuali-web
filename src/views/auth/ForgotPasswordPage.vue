@@ -33,7 +33,7 @@ import { ref, computed, onBeforeUnmount } from 'vue'
 import { useForgotPassword } from '@/composables/useForgotPassword'
 import { useEmailValidation } from '@/composables/useFormValidation'
 import AppAlert from '@/components/ui/AppAlert.vue'
-import AuthCard from '@/components/ui/AuthCard.vue'
+import AuthCard from '@/components/ui/auth/AuthCard.vue'
 import FormInput from '@/components/ui/FormInput.vue'
 import SubmitButton from '@/components/ui/SubmitButton.vue'
 

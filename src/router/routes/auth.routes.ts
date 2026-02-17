@@ -10,19 +10,19 @@ const authRoutes: RouteRecordRaw[] = [
     component: AuthLayout,
     children: [
       {
-        path: '/login',
+        path: 'login',
         name: 'login',
         component: LoginPage,
         meta: { guestOnly: true },
       },
       {
-        path: '/forgot-password',
+        path: 'forgot-password',
         name: 'forgot-password',
         component: ForgotPasswordPage,
         meta: { guestOnly: true },
       },
       {
-        path: '/reset-password',
+        path: 'reset-password',
         name: 'reset-password',
         component: ResetPasswordPage,
         meta: { guestOnly: true },
