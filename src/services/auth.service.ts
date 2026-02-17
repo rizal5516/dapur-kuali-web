@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { api, ensureCsrfCookie } from '@/lib/api'
+import { api, ensureCsrfCookie } from '@/lib/api.lib'
 
 export type User = {
   id: number

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { api } from '@/lib/api'
+import { api } from '@/lib/api.lib'
 
 export async function getPublicProfile() {
   const res = await api.get('/api/public/profile')

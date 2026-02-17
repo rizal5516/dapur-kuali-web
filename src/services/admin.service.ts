@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { api } from '@/lib/api'
+import { api } from '@/lib/api.lib'
 
 export async function adminGetProfile() {
   const res = await api.get('/api/admin/profile')
@@ -11,7 +11,6 @@ export async function adminUpdateProfile(payload: any) {
   return res.data
 }
 
-// Menu Categories
 export async function adminListMenuCategories(page = 1) {
   const res = await api.get('/api/admin/menu-categories', { params: { page } })
   return res.data
@@ -32,7 +31,6 @@ export async function adminDeleteMenuCategory(id: number) {
   return res.data
 }
 
-// Menu Items
 export async function adminListMenuItems(page = 1) {
   const res = await api.get('/api/admin/menu-items', { params: { page } })
   return res.data
@@ -53,7 +51,6 @@ export async function adminDeleteMenuItem(id: number) {
   return res.data
 }
 
-// Galleries
 export async function adminListGalleries(page = 1) {
   const res = await api.get('/api/admin/galleries', { params: { page } })
   return res.data
@@ -74,7 +71,6 @@ export async function adminDeleteGallery(id: number) {
   return res.data
 }
 
-// Wedding Reservations
 export async function adminListWeddingReservations(params?: { page?: number; status?: string }) {
   const res = await api.get('/api/admin/wedding-reservations', {
     params: { page: params?.page ?? 1, status: params?.status },

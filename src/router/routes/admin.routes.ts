@@ -1,6 +1,6 @@
 import type { RouteRecordRaw } from 'vue-router'
 import DashboardPage from '@/views/admin/DashboardPage.vue'
-import ResetPasswordPage from '@/views/admin/ResetPasswordPage.vue'
+import ChangePasswordPage from '@/views/admin/ChangePasswordPage.vue'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
 
 const adminRoutes: RouteRecordRaw[] = [
@@ -15,9 +15,9 @@ const adminRoutes: RouteRecordRaw[] = [
         component: DashboardPage,
       },
       {
-        path: 'reset-password',
-        name: 'admin.reset-password',
-        component: ResetPasswordPage,
+        path: 'change-password',
+        name: 'admin.change-password',
+        component: ChangePasswordPage,
       },
     ],
   },

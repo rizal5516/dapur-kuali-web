@@ -61,6 +61,11 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
+    setUser(user: User) {
+      this.user = user
+      this.bootstrapped = true
+    },
+
     reset() {
       this.user = null
       this.bootstrapped = false

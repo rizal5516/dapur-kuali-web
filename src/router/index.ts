@@ -4,7 +4,7 @@ import type { RouteRecordRaw } from 'vue-router'
 import publicRoutes from './routes/public.routes'
 import authRoutes from './routes/auth.routes'
 import adminRoutes from './routes/admin.routes'
-import { safeRedirectTarget } from '@/utils/safeRedirect'
+import { safeRedirectTarget } from '@/utils/safeRedirect.utils'
 
 import { useAuthStore } from '@/stores/auth.store'
 

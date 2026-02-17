@@ -40,21 +40,21 @@
             class="box p-5 before:absolute before:inset-0 before:mx-3 before:-mb-3 before:border before:border-foreground/10 before:bg-background/30 before:z-[-1] after:absolute after:inset-0 after:border after:border-foreground/10 after:bg-background after:shadow-[0px_3px_5px_#0000000b] after:z-[-1] after:backdrop-blur-md before:shadow-foreground/5 absolute right-0 top-0 z-50 -mr-0.5 -mt-0.5 flex w-64 flex-col gap-2.5 px-6 py-5 before:rounded-2xl before:shadow-xl before:backdrop-blur after:rounded-2xl"
           >
             <div class="flex flex-col gap-0.5">
-              <div class="font-medium">Johnny Depp</div>
-              <div class="mt-0.5 text-xs opacity-70">Frontend Engineer</div>
+              <template v-if="isLoading">
+                <div class="font-medium"></div>
+                <div class="mt-0.5 text-xs opacity-70"></div>
+              </template>
+              <template v-else>
+                <div class="font-medium">{{ displayName }}</div>
+                <div class="mt-0.5 text-xs opacity-70">{{ displayRole }}</div>
+              </template>
             </div>
             <div class="bg-foreground/5 h-px"></div>
             <div class="flex flex-col gap-0.5">
-              <a class="hover:bg-foreground/5 -mx-3 flex gap-2.5 rounded-lg px-4 py-1.5" href="">
-                <component
-                  :is="menuIcons.users"
-                  :size="16"
-                  :stroke-width="1.5"
-                  class="[--color:currentColor] stroke-(--color) fill-(--color)/25"
-                />
-                Profile
-              </a>
-              <a class="hover:bg-foreground/5 -mx-3 flex gap-2.5 rounded-lg px-4 py-1.5" href="">
+              <router-link
+                class="hover:bg-foreground/5 -mx-3 flex gap-2.5 rounded-lg px-4 py-1.5"
+                :to="{ name: 'admin.change-password' }"
+              >
                 <component
                   :is="menuIcons.fileLock"
                   :size="16"
@@ -62,7 +62,7 @@
                   class="[--color:currentColor] stroke-(--color) fill-(--color)/25"
                 />
                 Reset Password
-              </a>
+              </router-link>
             </div>
             <div class="bg-foreground/5 h-px"></div>
             <div class="flex flex-col gap-0.5">
@@ -90,9 +90,16 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted } from 'vue'
 import { useMenuIcons } from '@/composables/useMenuIcons'
 import { useLogout } from '@/composables/useLogout'
+import { useAdminProfile } from '@/composables/useAdminProfile'
 
 const menuIcons = useMenuIcons()
 const { isLoggingOut, handleLogout } = useLogout()
+const { displayName, displayRole, isLoading, fetchProfileIfMissing } = useAdminProfile()
+
+onMounted(() => {
+  fetchProfileIfMissing()
+})
 </script>

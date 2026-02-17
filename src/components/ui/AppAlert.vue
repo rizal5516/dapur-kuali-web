@@ -73,7 +73,6 @@ const alertClasses = computed(() => {
   ]
 })
 
-// SVG Icons as functional components
 const ErrorIcon = defineComponent({
   render: () =>
     h(
@@ -168,7 +167,6 @@ const handleClose = () => {
   emit('close')
 }
 
-// Auto dismiss ketika message berubah
 watch(
   () => props.message,
   (newMessage) => {
@@ -183,7 +181,6 @@ watch(
   { immediate: true },
 )
 
-// Cleanup on unmount
 import { onBeforeUnmount } from 'vue'
 onBeforeUnmount(() => {
   clearTimer()

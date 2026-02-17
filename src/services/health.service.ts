@@ -1,4 +1,4 @@
-import { api } from '@/lib/api'
+import { api } from '@/lib/api.lib'
 
 export const checkHealth = async () => {
   const res = await api.get('/api/health')

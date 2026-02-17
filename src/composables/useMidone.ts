@@ -1,4 +1,4 @@
-import { initMidoneDashboard } from '../plugins/midone'
+import { initMidoneDashboard } from '../plugins/midone.plugins'
 
 let dashboardLoaded = false
 
@@ -16,6 +16,6 @@ export function useMidone() {
   }
 
   return {
-    loadDashboardScripts
+    loadDashboardScripts,
   }
 }

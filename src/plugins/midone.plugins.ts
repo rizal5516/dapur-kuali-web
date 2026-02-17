@@ -24,7 +24,6 @@ async function loadScripts(scripts: string[]): Promise<void> {
 export async function initMidoneAuth(): Promise<void> {
   const authScripts = [
     '/assets/js/vendors/dom.js',
-    '/assets/js/vendors/modal.js',
     '/assets/js/vendors/lucide.js',
     '/assets/js/components/base/page-loader.js',
     '/assets/js/components/base/lucide.js',
@@ -46,9 +45,7 @@ export async function initMidoneDashboard(): Promise<void> {
     '/assets/js/vendors/chartjs.js',
     '/assets/js/vendors/vector-map.js',
     '/assets/js/vendors/tiny-slider.js',
-    '/assets/js/vendors/modal.js',
     '/assets/js/vendors/simplebar.js',
-    '/assets/js/pages/dashboard-overview-1.js',
     '/assets/js/components/base/page-loader.js',
     '/assets/js/components/base/lucide.js',
     '/assets/js/components/base/tippy.js',
@@ -56,7 +53,6 @@ export async function initMidoneDashboard(): Promise<void> {
     '/assets/js/components/report-line-chart.js',
     '/assets/js/components/report-pie-chart.js',
     '/assets/js/components/report-donut-chart.js',
-    '/assets/js/components/vector-map.js',
     '/assets/js/components/report-donut-chart-1.js',
     '/assets/js/components/simple-line-chart-1.js',
     '/assets/js/components/base/tiny-slider.js',

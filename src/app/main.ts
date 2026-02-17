@@ -3,7 +3,7 @@ import { createPinia } from 'pinia'
 
 import App from './App.vue'
 import router from '../router'
-import { initMidoneAuth } from '../plugins/midone'
+import { initMidoneAuth } from '../plugins/midone.plugins'
 
 async function bootstrap() {
   await initMidoneAuth()

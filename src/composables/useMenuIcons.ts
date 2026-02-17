@@ -1,4 +1,4 @@
-import { useLucideIcon } from '@/plugins/lucide'
+import { useLucideIcon } from '@/plugins/lucide.plugins'
 
 export function useMenuIcons() {
   return {

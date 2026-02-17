@@ -11,11 +11,11 @@
     <div class="my-auto">
       <img class="-mt-16 w-1/2" :src="illustration" alt="Illustration" />
       <div class="mt-10 text-4xl font-medium leading-tight text-white">
-        A few more clicks to <br />
-        sign in to your account.
+        All your restaurant operations <br />
+        under your control.
       </div>
       <div class="mt-5 text-lg text-white opacity-60">
-        Manage all your e-commerce accounts in one place
+        Manage menus, transactions, and performance with efficiency.
       </div>
     </div>
   </div>

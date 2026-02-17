@@ -1,4 +1,4 @@
-import { api } from '@/lib/api'
+import { api } from '@/lib/api.lib'
 
 export async function uploadImage(
   file: File,

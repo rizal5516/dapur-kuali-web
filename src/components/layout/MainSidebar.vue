@@ -12,9 +12,11 @@
         />
       </div>
     </div>
+
     <div
       class="side-menu__content z-20 pt-5 pb-[7.5rem] relative w-[275px] duration-200 transition-[width] group-[.side-menu--collapsed]:xl:w-[110px] group-[.side-menu--collapsed.side-menu--on-hover]:xl:w-[275px] h-screen flex flex-col"
     >
+      <!-- Logo -->
       <div
         class="relative z-10 hidden h-[65px] w-[275px] flex-none items-center overflow-hidden px-6 duration-200 xl:flex group-[.side-menu--collapsed.side-menu--on-hover]:xl:w-[275px] group-[.side-menu--collapsed]:xl:w-[110px]"
       >
@@ -22,7 +24,7 @@
           :to="{ name: 'admin.dashboard' }"
           class="flex items-center transition-[margin] duration-200 xl:ml-2 group-[.side-menu--collapsed.side-menu--on-hover]:xl:ml-2 group-[.side-menu--collapsed]:xl:ml-6"
         >
-          <img class="size-5" :src="logo" />
+          <img class="size-5" :src="logo" alt="Logo" />
           <div
             class="ml-3.5 text-nowrap transition-opacity group-[.side-menu--collapsed.side-menu--on-hover]:xl:opacity-100 group-[.side-menu--collapsed]:xl:opacity-0"
           >
@@ -40,14 +42,13 @@
           />
         </router-link>
       </div>
+
+      <!-- Navigation -->
       <div
         class="w-full h-full z-20 px-4 overflow-y-auto overflow-x-hidden pb-3 [&:-webkit-scrollbar]:w-0 scroll-smooth [&_.simplebar-scrollbar]:before:!bg-background/70 [-webkit-mask-image:_linear-gradient(to_top,_rgba(0,_0,_0,_0),_black_30px),_linear-gradient(to_bottom,_rgba(0,_0,_0,_0),_black_30px)] [-webkit-mask-composite:_destination-in]"
       >
         <ul class="scrollable">
-          <!-- BEGIN: First Child -->
           <li class="side-menu__group-label">PAGES</li>
-          <!-- END: First Child -->
-          <!-- BEGIN: First Child -->
           <li>
             <router-link
               :to="{ name: 'admin.dashboard' }"
@@ -60,12 +61,14 @@
               <div class="side-menu__link__title">Dashboard</div>
             </router-link>
           </li>
-          <!-- END: First Child -->
         </ul>
       </div>
+
+      <!-- Profile / Account block -->
       <div
         class="side-menu__account group/profile absolute inset-x-0 bottom-0 mx-4 mb-8 transition-[width] group-[.side-menu--collapsed.side-menu--on-hover]:block group-[.side-menu--collapsed]:justify-center xl:group-[.side-menu--collapsed]:flex"
       >
+        <!-- Collapsed / expanded pill -->
         <div
           class="bg-background/10 border-background/20 dark:bg-foreground/[.02] dark:border-foreground/[.09] flex cursor-pointer items-center rounded-full border p-2.5 opacity-80 backdrop-blur-2xl transition hover:opacity-100"
         >
@@ -75,15 +78,23 @@
             <img
               class="absolute top-0 h-full w-full object-cover"
               :src="profile8"
-              alt="Midone - Admin Dashboard Template"
+              alt="Profile picture"
             />
           </div>
+
           <div
             class="ms-3 flex w-full items-center overflow-hidden transition-opacity group-[.side-menu--collapsed.side-menu--on-hover]:ms-3 group-[.side-menu--collapsed.side-menu--on-hover]:w-full group-[.side-menu--collapsed.side-menu--on-hover]:opacity-100 xl:group-[.side-menu--collapsed]:ms-0 xl:group-[.side-menu--collapsed]:w-0 xl:group-[.side-menu--collapsed]:opacity-0"
           >
             <div class="w-28">
-              <div class="w-full truncate font-medium">Robert De Niro</div>
-              <div class="w-full truncate text-xs opacity-60">Administrator</div>
+              <!-- Skeleton shimmer while loading -->
+              <template v-if="isLoading">
+                <div class="h-3.5 w-20 animate-pulse rounded bg-background/30"></div>
+                <div class="mt-1 h-2.5 w-14 animate-pulse rounded bg-background/20"></div>
+              </template>
+              <template v-else>
+                <div class="w-full truncate font-medium">{{ displayName }}</div>
+                <div class="w-full truncate text-xs opacity-60">{{ displayRole }}</div>
+              </template>
             </div>
             <component
               :is="menuIcons.moveRight"
@@ -93,31 +104,21 @@
             />
           </div>
         </div>
+
+        <!-- Hover dropdown -->
         <div class="hidden group-hover/profile:block">
           <div
             class="box p-5 before:absolute before:inset-0 before:mx-3 before:-mb-3 before:border before:border-foreground/10 before:bg-background/30 before:z-[-1] after:absolute after:inset-0 after:border after:border-foreground/10 after:bg-background after:shadow-[0px_3px_5px_#0000000b] after:z-[-1] after:backdrop-blur-md text-foreground before:shadow-foreground/5 absolute bottom-0 left-[100%] z-50 ml-2 flex w-64 flex-col gap-2.5 px-6 py-5 before:rounded-2xl before:shadow-xl before:backdrop-blur after:rounded-2xl"
           >
             <div class="flex flex-col gap-0.5">
-              <div class="font-medium">Robert De Niro</div>
-              <div class="mt-0.5 text-xs opacity-70">DevOps Engineer</div>
+              <div class="font-medium">{{ displayName }}</div>
+              <div class="mt-0.5 text-xs opacity-70">{{ displayRole }}</div>
             </div>
             <div class="bg-foreground/5 h-px"></div>
             <div class="flex flex-col gap-0.5">
               <router-link
                 class="hover:bg-foreground/5 -mx-3 flex gap-2.5 rounded-lg px-4 py-1.5"
-                :to="{ name: '' }"
-              >
-                <component
-                  :is="menuIcons.users"
-                  :size="16"
-                  :stroke-width="1.5"
-                  class="[--color:currentColor] stroke-(--color) fill-(--color)/25"
-                />
-                Profile
-              </router-link>
-              <router-link
-                class="hover:bg-foreground/5 -mx-3 flex gap-2.5 rounded-lg px-4 py-1.5"
-                :to="{ name: 'admin.reset-password' }"
+                :to="{ name: 'admin.change-password' }"
               >
                 <component
                   :is="menuIcons.fileLock"
@@ -154,11 +155,18 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted } from 'vue'
 import logo from '/assets/images/logo.svg'
 import profile8 from '/assets/images/fakers/profile-8.jpg'
 import { useMenuIcons } from '@/composables/useMenuIcons'
 import { useLogout } from '@/composables/useLogout'
+import { useAdminProfile } from '@/composables/useAdminProfile'
 
 const menuIcons = useMenuIcons()
 const { isLoggingOut, handleLogout } = useLogout()
+const { displayName, displayRole, isLoading, fetchProfileIfMissing } = useAdminProfile()
+
+onMounted(() => {
+  fetchProfileIfMissing()
+})
 </script>
